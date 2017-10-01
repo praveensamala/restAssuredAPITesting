@@ -13,14 +13,14 @@ public class restAPITests
 {
 	@Test
 	public void sampleTest() {
-		Response resp = get("http://services.groupkt.com/country/get/all");
+		/*Response resp = get("http://services.groupkt.com/country/get/all");
 		System.out.println("resp : "+resp.getStatusCode());
 		
 		String json = resp.asString();
 		JsonPath jsonpath = new JsonPath (json);
 		
-		System.out.println("jsonpath : "+jsonpath.get("ResResponse").toString());
+		System.out.println("jsonpath : "+jsonpath.get("ResResponse").toString());*/
 		
-		//given().get("http://services.groupkt.com/country/get/iso2code/IN").then().statusCode(200).log().all();
+		given().get("http://services.groupkt.com/country/get/iso2code/IN").then().statusCode(200).log().all();
 	}
 }
