@@ -20,7 +20,8 @@ import com.jayway.restassured.response.Response;
 
 import junit.framework.Assert;
 
-public class restAPITests {
+public class restAPITests extends BaseClass {
+	
 	// This test case will just call the GET service and print the response
 	@Test(enabled = false)
 	public void sampleTest01() throws URISyntaxException, MalformedURLException {
@@ -63,8 +64,31 @@ public class restAPITests {
 	}
 	
 	//This test case will validate the status code with in the restassured get statement call itself as mentioned below
-	@Test (enabled = true) 
+	@Test (enabled = false)
 	public void sampleTest05() throws URISyntaxException, MalformedURLException {
 		RestAssured.given().accept(ContentType.JSON).when().get(new URL("http://services.groupkt.com/country/get/iso2code/IN")).then().assertThat().statusCode(HttpStatus.SC_OK);
+	}
+	
+	//This test case will fetch the body data in string format
+	@Test (enabled = false)
+	public void sampleTest06() throws URISyntaxException, MalformedURLException {
+		String response = RestAssured.given().accept(ContentType.JSON).when().get("http://services.groupkt.com/country/get/iso2code/IN").thenReturn().body().asString();
+		System.out.println("response : "+response);
+	}
+	
+	//This test is to use the predefined environment variables of basepath, baseuri and port to call the service
+	@Test (enabled = false)
+	public void sampleTest07() throws URISyntaxException, MalformedURLException {
+		//BaseClass.setup();
+		System.out.println("baseURI : "+baseURI);
+		RestAssured.given().accept(ContentType.JSON).when().get(new URI("/IN")).then().assertThat().statusCode(HttpStatus.SC_OK);
+	}
+	
+	//This test is to use custom headers while calling the service
+	@Test (enabled = true)
+	public void sampleTest08() throws URISyntaxException, MalformedURLException {
+		Map<String, String> headerslist = new HashMap<String, String>();
+		headerslist.put("Accept", "Application/JSON");
+		RestAssured.given().headers(headerslist).when().get(new URI("http://services.groupkt.com/country/get/iso2code/IN")).then().assertThat().statusCode(HttpStatus.SC_OK);
 	}
 }
