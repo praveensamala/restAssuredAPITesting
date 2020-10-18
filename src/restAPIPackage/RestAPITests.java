@@ -20,24 +20,17 @@ import com.jayway.restassured.response.Response;
 
 import junit.framework.Assert;
 
-public class restAPITests extends BaseClass {
+public class RestAPITests extends BaseClass {
 	
 	// This test case will just call the GET service and print the response
 	@Test(enabled = false)
 	public void sampleTest01() throws URISyntaxException, MalformedURLException {
 		/*
 		 * Response resp = get("http://services.groupkt.com/country/get/all");
-		 * System.out.println("resp : "+resp.getStatusCode());
-		 * 
-		 * String json = resp.asString(); JsonPath jsonpath = new JsonPath (json);
-		 * 
+		 * System.out.println("resp : "+resp.getStatusCode()); 
+		 * String json = resp.asString(); JsonPath jsonpath = new JsonPath (json); 
 		 * System.out.println("jsonpath : "+jsonpath.get("ResResponse").toString());
 		 */
-
-		// given().get("http://services.groupkt.com/country/get/iso2code/IN").then().statusCode(200).log().all();
-
-		// Response resp = RestAssured.when().get(new
-		// URI("http://services.groupkt.com/country/get/iso2code/IN"));
 		Response resp = RestAssured.given().when().get(new URL("http://services.groupkt.com/country/get/iso2code/IN"));
 		System.out.println(resp.asString());
 	}
@@ -85,10 +78,47 @@ public class restAPITests extends BaseClass {
 	}
 	
 	//This test is to use custom headers while calling the service
-	@Test (enabled = true)
+	@Test (enabled = false)
 	public void sampleTest08() throws URISyntaxException, MalformedURLException {
 		Map<String, String> headerslist = new HashMap<String, String>();
 		headerslist.put("Accept", "Application/JSON");
 		RestAssured.given().headers(headerslist).when().get(new URI("http://services.groupkt.com/country/get/iso2code/IN")).then().assertThat().statusCode(HttpStatus.SC_OK);
 	}
+	
+	@Test (enabled = true)
+	public void sampleTest09() throws URISyntaxException, MalformedURLException {
+		boolean loopcall = true;
+		while (loopcall) {
+			System.out.println("wait, calling api... ");
+			Response response = RestAssured.given().accept(ContentType.JSON).when().get(new URI("http://dummy.restapiexample.com/api/v1/employees"));
+			if (response.asString().toLowerCase().contains("too many requests") || response.asString().toLowerCase().contains("too many attempts")) {
+				
+			}
+			else {
+				System.out.println("response : "+response.asString());
+				JsonPath json = new JsonPath(response.asString());
+				
+				System.out.println("status    : "+json.getString("status"));
+				System.out.println("id        : "+json.getInt("data[0].id"));
+				System.out.println("list      : "+json.getString("data[0].employee_name"));
+				
+				String data = json.getString("data");
+				System.out.println("data list : "+json.getString("data"));
+				
+				//below is to get the json object list as object
+				List<Object> list = json.getList("data");
+				System.out.println("\nlist size : "+list.size());
+				for (Object text:list) {
+					System.out.println("text : "+text.toString());
+					JsonPath json2 = new JsonPath(text.toString());
+					System.out.println("employee_name : "+json2.getString("employee_name"));
+				}
+				
+				Assert.assertEquals("success", json.getString("status"));
+				Assert.assertEquals(1, json.getInt("data[0].id"));
+				loopcall = false;
+			}
+		}
+	}
 }
+
